@@ -1,16 +1,9 @@
-FROM apache/airflow:2.8.3
-
-USER root
-
-# Install Java (for PySpark), Kafka library dependencies, and build tools
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    openjdk-11-jdk-headless \
-    librdkafka-dev \
-    && rm -rf /var/lib/apt/lists/*
+FROM apache/airflow:2.8.3-python3.11
 
 USER airflow
 
-# Install Python dependencies
-COPY requirements.txt /
-RUN pip install --no-cache-dir -r /requirements.txt
+COPY requirements.txt /requirements.txt
+
+RUN pip install --upgrade pip setuptools wheel \
+    && pip install --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.8.3/constraints-3.11.txt" \
+       -r /requirements.txt
